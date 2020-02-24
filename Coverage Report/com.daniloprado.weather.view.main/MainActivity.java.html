@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MainActivity.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debugAndroidTest</a> &gt; <a href="index.source.html" class="el_package">com.daniloprado.weather.view.main</a> &gt; <span class="el_source">MainActivity.java</span></div><h1>MainActivity.java</h1><pre class="source lang-java linenums">package com.daniloprado.weather.view.main;
+
+import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
+import android.view.inputmethod.InputMethodManager;
+
+import com.daniloprado.weather.R;
+import com.daniloprado.weather.model.City;
+import com.daniloprado.weather.view.base.BaseActivity;
+import com.daniloprado.weather.view.base.BaseFragment;
+import com.daniloprado.weather.view.cityforecast.CityForecastFragment;
+import com.daniloprado.weather.view.citylist.CityListFragment;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+
+<span class="fc" id="L21">public class MainActivity extends BaseActivity</span>
+        implements CityListFragment.Contract, FragmentManager.OnBackStackChangedListener {
+
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="fc" id="L29">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L30">        setContentView(R.layout.activity_main);</span>
+<span class="fc" id="L31">        ButterKnife.bind(this);</span>
+<span class="fc" id="L32">        getDiComponent().inject(this);</span>
+<span class="fc" id="L33">        getSupportFragmentManager().addOnBackStackChangedListener(this);</span>
+<span class="fc" id="L34">        init();</span>
+
+<span class="pc bpc" id="L36" title="1 of 2 branches missed.">        if (savedInstanceState == null) {</span>
+<span class="fc" id="L37">            setupCityListFragment();</span>
+        }
+<span class="fc" id="L39">    }</span>
+
+    private void init() {
+<span class="fc" id="L42">        initToolbar();</span>
+<span class="fc" id="L43">    }</span>
+
+    private void setupCityListFragment() {
+<span class="fc" id="L46">        addContentFragment(new CityListFragment());</span>
+<span class="fc" id="L47">    }</span>
+
+    private void setupCityForecastFragment(City city) {
+<span class="fc" id="L50">        CityForecastFragment cityForecastFragment = new CityForecastFragment();</span>
+<span class="fc" id="L51">        Bundle args = new Bundle();</span>
+<span class="fc" id="L52">        args.putSerializable(&quot;city&quot;, city);</span>
+<span class="fc" id="L53">        cityForecastFragment.setArguments(args);</span>
+<span class="fc" id="L54">        replaceContentFragment(cityForecastFragment);</span>
+<span class="fc" id="L55">    }</span>
+
+    private void replaceContentFragment(BaseFragment contractFragment) {
+<span class="fc" id="L58">        getSupportFragmentManager()</span>
+<span class="fc" id="L59">                .beginTransaction()</span>
+<span class="fc" id="L60">                .replace(R.id.root_content, contractFragment)</span>
+<span class="fc" id="L61">                .addToBackStack(null)</span>
+<span class="fc" id="L62">                .commit();</span>
+<span class="fc" id="L63">    }</span>
+
+    private void addContentFragment(BaseFragment contractFragment) {
+<span class="fc" id="L66">        getSupportFragmentManager()</span>
+<span class="fc" id="L67">                .beginTransaction()</span>
+<span class="fc" id="L68">                .add(R.id.root_content, contractFragment)</span>
+<span class="fc" id="L69">                .commit();</span>
+<span class="fc" id="L70">    }</span>
+
+    private void initToolbar() {
+<span class="pc bpc" id="L73" title="1 of 2 branches missed.">        if (toolbar != null) {</span>
+<span class="fc" id="L74">            toolbar.setTitle(getString(R.string.app_name));</span>
+<span class="fc" id="L75">            setSupportActionBar(toolbar);</span>
+<span class="fc" id="L76">            ActionBar bar = getSupportActionBar();</span>
+<span class="pc bpc" id="L77" title="1 of 2 branches missed.">            if (bar != null) {</span>
+<span class="fc" id="L78">                bar.setDisplayShowTitleEnabled(true);</span>
+            }
+<span class="fc" id="L80">            shouldDisplayHomeUp();</span>
+        }
+<span class="fc" id="L82">    }</span>
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+<span class="fc" id="L86">        int id = item.getItemId();</span>
+
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">        if (id == android.R.id.home) {</span>
+<span class="fc" id="L89">            getSupportFragmentManager().popBackStack();</span>
+<span class="fc" id="L90">            return false;</span>
+        }
+
+<span class="nc" id="L93">        return super.onOptionsItemSelected(item);</span>
+    }
+
+    @Override
+    public void onBackPressed() {
+<span class="fc bfc" id="L98" title="All 2 branches covered.">        if (getSupportFragmentManager().getBackStackEntryCount() == 0) {</span>
+<span class="fc" id="L99">            super.onBackPressed();</span>
+        } else {
+<span class="fc" id="L101">            getSupportFragmentManager().popBackStack();</span>
+        }
+<span class="fc" id="L103">    }</span>
+
+    @Override
+    public void onCitySelected(City city) {
+<span class="fc" id="L107">        setupCityForecastFragment(city);</span>
+<span class="fc" id="L108">    }</span>
+
+    @Override
+    public void onCityAddDialogDismissed() {
+<span class="fc" id="L112">        initToolbar();</span>
+
+<span class="pc bpc" id="L114" title="1 of 2 branches missed.">        if (getCurrentFocus() != null) {</span>
+<span class="fc" id="L115">            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);</span>
+<span class="fc" id="L116">            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);</span>
+        }
+<span class="fc" id="L118">    }</span>
+
+    @Override
+    public void onBackStackChanged() {
+<span class="fc" id="L122">        shouldDisplayHomeUp();</span>
+<span class="fc" id="L123">    }</span>
+
+    public void shouldDisplayHomeUp() {
+<span class="fc bfc" id="L126" title="All 2 branches covered.">        boolean enableHomeUp = getSupportFragmentManager().getBackStackEntryCount() &gt; 0;</span>
+<span class="fc" id="L127">        ActionBar bar = getSupportActionBar();</span>
+<span class="pc bpc" id="L128" title="1 of 2 branches missed.">        if (bar != null) {</span>
+<span class="fc" id="L129">            bar.setDisplayHomeAsUpEnabled(enableHomeUp);</span>
+        }
+<span class="fc" id="L131">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span>Generated by the Android Gradle plugin 3.1.2</div></body></html>

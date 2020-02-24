@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CityAddDialogFragment.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debugAndroidTest</a> &gt; <a href="index.source.html" class="el_package">com.daniloprado.weather.view.cityadd</a> &gt; <span class="el_source">CityAddDialogFragment.java</span></div><h1>CityAddDialogFragment.java</h1><pre class="source lang-java linenums">package com.daniloprado.weather.view.cityadd;
+
+import android.app.Activity;
+import android.app.Dialog;
+import android.content.Context;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.ViewFlipper;
+
+import com.daniloprado.weather.R;
+import com.daniloprado.weather.model.City;
+import com.daniloprado.weather.util.ViewFlipperUtil;
+import com.daniloprado.weather.view.base.BaseDialogFragment;
+
+import java.util.List;
+
+import javax.inject.Inject;
+
+import butterknife.BindView;
+
+<span class="fc" id="L39">public class CityAddDialogFragment extends BaseDialogFragment implements CityAddContract.View {</span>
+
+<span class="fc" id="L41">    public static int REQUEST_CODE = 1;</span>
+
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+
+    @BindView(R.id.main_layout)
+    LinearLayout mainLayout;
+
+    @BindView(R.id.edittext_toolbar_city_search)
+    EditText editTextCitySearch;
+
+    @BindView(R.id.recyclerview_cities_found)
+    RecyclerView recyclerView;
+
+    @BindView(R.id.error_layout)
+    LinearLayout errorLayout;
+
+    @BindView(R.id.progressbar)
+    ProgressBar progressBar;
+
+    @BindView(R.id.viewflipper)
+    ViewFlipper viewFlipper;
+
+    @Inject
+    CityAddPresenter presenter;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+<span class="fc" id="L69">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L70">        getDiComponent().inject(this);</span>
+<span class="fc" id="L71">    }</span>
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+<span class="fc" id="L76">        return inflater.inflate(R.layout.fragment_dialog_city_add, container, false);</span>
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+<span class="fc" id="L81">        super.onViewCreated(view, savedInstanceState);</span>
+<span class="fc" id="L82">        presenter.setView(this);</span>
+<span class="fc" id="L83">        initToolbar();</span>
+<span class="fc" id="L84">        setupUi();</span>
+<span class="fc" id="L85">    }</span>
+
+    private void initToolbar() {
+<span class="fc" id="L88">        setHasOptionsMenu(true);</span>
+<span class="pc bpc" id="L89" title="1 of 2 branches missed.">        if (toolbar != null) {</span>
+<span class="fc" id="L90">            ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);</span>
+<span class="fc" id="L91">            ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();</span>
+<span class="pc bpc" id="L92" title="1 of 2 branches missed.">            if (actionBar != null) {</span>
+<span class="fc" id="L93">                actionBar.setDisplayHomeAsUpEnabled(true);</span>
+<span class="fc" id="L94">                actionBar.setHomeButtonEnabled(true);</span>
+            }
+        }
+<span class="fc" id="L97">    }</span>
+
+    private void setupUi() {
+<span class="fc" id="L100">        editTextCitySearch.addTextChangedListener(new TextWatcher() {</span>
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+<span class="fc" id="L104">            }</span>
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+<span class="fc" id="L109">            }</span>
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+<span class="fc" id="L113">                presenter.searchCities(editable.toString());</span>
+<span class="fc" id="L114">            }</span>
+        });
+
+<span class="fc" id="L117">        editTextCitySearch.requestFocus();</span>
+<span class="fc" id="L118">        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);</span>
+<span class="fc" id="L119">        imm.showSoftInput(editTextCitySearch, InputMethodManager.SHOW_IMPLICIT);</span>
+<span class="fc" id="L120">    }</span>
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+<span class="nc" id="L125">        Dialog dialog = super.onCreateDialog(savedInstanceState);</span>
+<span class="nc" id="L126">        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);</span>
+<span class="nc" id="L127">        return dialog;</span>
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+<span class="fc" id="L132">        int id = item.getItemId();</span>
+
+<span class="pc bpc" id="L134" title="1 of 2 branches missed.">        if (id == android.R.id.home) {</span>
+<span class="fc" id="L135">            close(Activity.RESULT_CANCELED);</span>
+<span class="fc" id="L136">            return true;</span>
+        }
+
+<span class="nc" id="L139">        return super.onOptionsItemSelected(item);</span>
+    }
+
+    @Override
+    public void onDestroy() {
+<span class="fc" id="L144">        presenter.onDestroy();</span>
+<span class="fc" id="L145">        super.onDestroy();</span>
+<span class="fc" id="L146">    }</span>
+
+    @Override
+    public void setupRecyclerViewAdapter(List&lt;City&gt; cityList) {
+<span class="fc" id="L150">        LinearLayoutManager manager = new LinearLayoutManager(getActivity());</span>
+<span class="fc" id="L151">        recyclerView.setLayoutManager(manager);</span>
+<span class="fc" id="L152">        recyclerView.setHasFixedSize(true);</span>
+<span class="fc" id="L153">        CitySearchAdapter adapter = new CitySearchAdapter(</span>
+                cityList,
+<span class="fc" id="L155">                city -&gt; presenter.onCitySelected(city));</span>
+<span class="fc" id="L156">        recyclerView.setAdapter(adapter);</span>
+<span class="fc" id="L157">    }</span>
+
+    @Override
+    public void showErrorCityAlreadyExists() {
+<span class="fc" id="L161">        Snackbar.make(mainLayout, R.string.error_message_city_has_already_been_added, Snackbar.LENGTH_SHORT).show();</span>
+<span class="fc" id="L162">    }</span>
+
+    @Override
+    public void close(int result) {
+<span class="fc" id="L166">        getFragmentManager().popBackStack();</span>
+<span class="fc" id="L167">        getTargetFragment().onActivityResult(REQUEST_CODE, result, null);</span>
+<span class="fc" id="L168">    }</span>
+
+    @Override
+    public void showLoadingLayout() {
+<span class="fc" id="L172">        ViewFlipperUtil.setDisplayedChild(viewFlipper, progressBar);</span>
+<span class="fc" id="L173">    }</span>
+
+    @Override
+    public void showErrorLayout() {
+<span class="nc" id="L177">        ViewFlipperUtil.setDisplayedChild(viewFlipper, errorLayout);</span>
+<span class="nc" id="L178">    }</span>
+
+    @Override
+    public void showContentLayout() {
+<span class="fc" id="L182">        ViewFlipperUtil.setDisplayedChild(viewFlipper, recyclerView);</span>
+<span class="fc" id="L183">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span>Generated by the Android Gradle plugin 3.1.2</div></body></html>

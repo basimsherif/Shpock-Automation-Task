@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CityForecastFragment.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debugAndroidTest</a> &gt; <a href="index.source.html" class="el_package">com.daniloprado.weather.view.cityforecast</a> &gt; <span class="el_source">CityForecastFragment.java</span></div><h1>CityForecastFragment.java</h1><pre class="source lang-java linenums">package com.daniloprado.weather.view.cityforecast;
+
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.content.res.ResourcesCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.ViewFlipper;
+
+import com.daniloprado.weather.R;
+import com.daniloprado.weather.data.dto.ForecastDto;
+import com.daniloprado.weather.model.City;
+import com.daniloprado.weather.model.weather.Data;
+import com.daniloprado.weather.util.DateUtils;
+import com.daniloprado.weather.util.ViewFlipperUtil;
+import com.daniloprado.weather.util.WeatherUtils;
+import com.daniloprado.weather.view.base.BaseFragment;
+import com.daniloprado.weather.widget.DailyWeatherView;
+
+import javax.inject.Inject;
+
+import butterknife.BindView;
+
+<span class="fc" id="L30">public class CityForecastFragment extends BaseFragment implements CityForecastContract.View {</span>
+
+    @BindView(R.id.textview_temperature)
+    TextView textViewTemperature;
+
+    @BindView(R.id.textview_city_name)
+    TextView textViewCityName;
+
+    @BindView(R.id.textview_current_city_weather)
+    TextView textViewCurrentWeather;
+
+    @BindView(R.id.imageview_current_day_weather)
+    ImageView imageViewCurrentWeather;
+
+    @BindView(R.id.first_day)
+    DailyWeatherView dailyWeatherViewDayOne;
+
+    @BindView(R.id.second_day)
+    DailyWeatherView dailyWeatherViewDayTwo;
+
+    @BindView(R.id.third_day)
+    DailyWeatherView dailyWeatherViewDayThree;
+
+    @BindView(R.id.fourth_day)
+    DailyWeatherView dailyWeatherViewDayFour;
+
+    @BindView(R.id.fifth_day)
+    DailyWeatherView dailyWeatherViewDayFive;
+
+    @BindView(R.id.error_layout)
+    LinearLayout errorLayout;
+
+    @BindView(R.id.progressbar)
+    ProgressBar progressBar;
+
+    @BindView(R.id.swiperefreshlayout)
+    SwipeRefreshLayout swipeRefreshLayout;
+
+    @BindView(R.id.viewflipper)
+    ViewFlipper viewFlipper;
+
+    @Inject
+    CityForecastPresenter presenter;
+
+<span class="fc" id="L74">    private City city = new City();</span>
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+<span class="fc" id="L78">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L79">        getDiComponent().inject(this);</span>
+<span class="fc" id="L80">        loadArgs();</span>
+<span class="fc" id="L81">    }</span>
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+<span class="fc" id="L85">        return inflater.inflate(R.layout.fragment_city_forecast, container, false);</span>
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+<span class="fc" id="L90">        super.onViewCreated(view, savedInstanceState);</span>
+<span class="fc" id="L91">        presenter.setView(this);</span>
+<span class="fc" id="L92">        presenter.loadDataWithProgress(city);</span>
+<span class="fc" id="L93">        setupUi();</span>
+<span class="fc" id="L94">    }</span>
+
+    @Override
+    public void onDestroy() {
+<span class="fc" id="L98">        presenter.onDestroy();</span>
+<span class="fc" id="L99">        super.onDestroy();</span>
+<span class="fc" id="L100">    }</span>
+
+    private void setupUi() {
+<span class="pc" id="L103">        swipeRefreshLayout.setOnRefreshListener(() -&gt; presenter.loadData(city));</span>
+<span class="fc" id="L104">        swipeRefreshLayout.setColorSchemeColors(ResourcesCompat.getColor(getResources(), R.color.colorAccent, null));</span>
+<span class="fc" id="L105">    }</span>
+
+    private void loadArgs() {
+<span class="fc" id="L108">        Bundle bundle = getArguments();</span>
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">        if (bundle.containsKey(City.KEY)) {</span>
+<span class="fc" id="L110">            city = (City) bundle.getSerializable(City.KEY);</span>
+        }
+<span class="fc" id="L112">    }</span>
+
+    @Override
+    public void showLoadingLayout() {
+<span class="fc" id="L116">        ViewFlipperUtil.setDisplayedChild(viewFlipper, progressBar);</span>
+<span class="fc" id="L117">    }</span>
+
+    @Override
+    public void showContentLayout() {
+<span class="fc" id="L121">        swipeRefreshLayout.setRefreshing(false);</span>
+<span class="fc" id="L122">        ViewFlipperUtil.setDisplayedChild(viewFlipper, swipeRefreshLayout);</span>
+<span class="fc" id="L123">    }</span>
+
+    @Override
+    public void showErrorLayout() {
+<span class="fc" id="L127">        ViewFlipperUtil.setDisplayedChild(viewFlipper, errorLayout);</span>
+<span class="fc" id="L128">    }</span>
+
+    @Override
+    public void updateForecast(ForecastDto dto) {
+<span class="fc" id="L132">        textViewTemperature.setText(String.valueOf(WeatherUtils.getFormattedTemperature(dto.currently.temperature)));</span>
+<span class="fc" id="L133">        textViewCityName.setText(city.name);</span>
+<span class="fc" id="L134">        textViewCurrentWeather.setText(dto.currently.summary);</span>
+<span class="fc" id="L135">        imageViewCurrentWeather.setImageDrawable(ResourcesCompat.getDrawable(getResources(),</span>
+<span class="fc" id="L136">                WeatherUtils.getWeatherIconResourceFromString(dto.currently.icon),</span>
+                null));
+
+<span class="fc" id="L139">        setupDayForecast(dailyWeatherViewDayOne, dto.daily.data.get(1));</span>
+<span class="fc" id="L140">        setupDayForecast(dailyWeatherViewDayTwo, dto.daily.data.get(2));</span>
+<span class="fc" id="L141">        setupDayForecast(dailyWeatherViewDayThree, dto.daily.data.get(3));</span>
+<span class="fc" id="L142">        setupDayForecast(dailyWeatherViewDayFour, dto.daily.data.get(4));</span>
+<span class="fc" id="L143">        setupDayForecast(dailyWeatherViewDayFive, dto.daily.data.get(5));</span>
+<span class="fc" id="L144">    }</span>
+
+    private void setupDayForecast(DailyWeatherView dailyWeatherView, Data data) {
+<span class="fc" id="L147">        dailyWeatherView.setDayOfTheWeek(DateUtils.getDayOfTheWeekFromUnixTime(data.time));</span>
+<span class="fc" id="L148">        dailyWeatherView.setDayWeatherImage(WeatherUtils.getWeatherIconResourceFromString(data.icon));</span>
+<span class="fc" id="L149">        dailyWeatherView.setMaxDayTemp(WeatherUtils.getFormattedTemperature(data.temperatureMax));</span>
+<span class="fc" id="L150">        dailyWeatherView.setMinDayTemp(WeatherUtils.getFormattedTemperature(data.temperatureMin));</span>
+<span class="fc" id="L151">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span>Generated by the Android Gradle plugin 3.1.2</div></body></html>
